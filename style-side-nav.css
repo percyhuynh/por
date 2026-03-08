@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════
+   RESET & TOKENS
+═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Brand */
+  --clr-bg:      #f0ece4;
+  --clr-ink:     #1a1612;
+  --clr-muted:   #9b9187;
+  --clr-accent:  #2d4a3e;
+  --clr-gold:    #c4783a;
+
+  /* Nav shell */
+  --nav-h:          38px;
+  --nav-w-compact:  190px;   /* idle/bar: auto-fit to dots  */
+  --nav-w-pill:     460px;   /* hover: full menu width       */
+  --nav-r:          99px;
+  --nav-bg:         rgba(22, 18, 14, 0.70);
+  --nav-bg-open:    rgba(14, 11,  8, 0.88);
+  --nav-border:     rgba(255, 255, 255, 0.09);
+
+  /* Each dot (idle) */
+  --dot-d:          7px;     /* diameter when resting        */
+  --dot-gap:        10px;    /* space between dots           */
+
+  /* Active dot expands into a bar */
+  --bar-w:          52px;    /* width of the expanded bar    */
+  --bar-h:          7px;     /* height = same as dot-d       */
+
+  /* Easing */
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --ease-out:    cubic-bezier(0.16, 1,    0.3,  1);
+  --ease-snappy: cubic-bezier(0.4,  0,    0.2,  1);
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════════ */
+html { scroll-behavior: smooth; }
+body {
+  background: var(--clr-bg);
+  color: var(--clr-ink);
+  font-family: Georgia, serif;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════════════ */
+.section {
+  min-height: 500vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10vh 13vw;
+  position: relative;
+  overflow: hidden;
+}
+.s1 { background: #f3bbbb; }
+.s2 { background: #e6dfd3; }
+.s3 { background: #2d4a3e; color: #cfc9bf; }
+.s3 .lbl, .s3 .body { color: rgba(207,201,191,0.50); }
+.s4 { background: #181410; color: #e6e0d4; }
+.s4 .lbl, .s4 .body { color: rgba(230,224,212,0.40); }
+.s5 { background: #f5ede0; }
+.s6 { background: #dedad4; }
+
+.lbl {
+  font-family: 'Unbounded', monospace;
+  font-size: 9px; font-weight: 300;
+  letter-spacing: 0.42em; text-transform: uppercase;
+  color: var(--clr-muted); margin-bottom: 22px;
+}
+.ttl {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(38px, 6vw, 84px); font-weight: 200;
+  line-height: 1.07; letter-spacing: -0.025em;
+  margin-bottom: 32px; max-width: 620px;
+}
+.body {
+  font-size: 15px; line-height: 1.9;
+  color: var(--clr-muted); max-width: 400px; font-weight: 300;
+}
+.ghost {
+  position: absolute; right: 8vw; bottom: 6vh;
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(80px, 15vw, 200px); font-weight: 200;
+  opacity: 0.04; user-select: none; line-height: 1;
+  color: currentColor; pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAV SHELL
+═══════════════════════════════════════════════════ */
+#nav {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  height: var(--nav-h);
+  width: var(--nav-w-compact);
+  border-radius: var(--nav-r);
+  overflow: hidden;
+
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid var(--nav-border);
+  box-shadow: 0 4px 28px rgba(0,0,0,0.22),
+              inset 0 1px 0 rgba(255,255,255,0.07);
+  cursor: pointer;
+
+  transition:
+    width      0.52s var(--ease-spring),
+    background 0.28s ease;
+}
+
+/* Hover → expand to full menu */
+#nav[data-state="pill"] {
+  width: var(--nav-w-pill);
+  background: var(--nav-bg-open);
+}
+
+/* ═══════════════════════════════════════════════════
+   LAYER A — DOTS
+   Each .nav-dot is a small pill that can expand into
+   a horizontal loading bar when active.
+═══════════════════════════════════════════════════ */
+.layer-dots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dot-gap);
+  padding: 0 20px;
+  z-index: 1;
+
+  transition: opacity 0.22s var(--ease-snappy);
+}
+
+/* Hide dots when pill menu is open */
+#nav[data-state="pill"] .layer-dots {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Individual dot ── */
+.nav-dot {
+  position: relative;
+  height: var(--bar-h);
+  width:  var(--dot-d);          /* ← starts as a round dot    */
+  border-radius: 99px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  /* Track background */
+  background: rgba(255, 255, 255, 0.20);
+
+  /* Width morphs dot → bar; height stays constant */
+  transition:
+    width      0.40s var(--ease-spring),
+    background 0.28s ease,
+    opacity    0.28s ease;
+}
+
+/* Active dot → expand to bar width */
+.nav-dot.is-active {
+  width: var(--bar-w);
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* Visited dot → stay as dot, accent colour */
+.nav-dot.is-visited {
+  width:      var(--dot-d);
+  background: rgba(196, 120, 58, 0.45);
+}
+
+/* ── Horizontal fill inside each dot ── */
+.dot-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 0%;                     /* driven by JS — NO CSS transition */
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--clr-accent), var(--clr-gold));
+
+  /* Glow on the leading edge */
+  box-shadow: 3px 0 12px rgba(196, 120, 58, 0.60);
+
+  pointer-events: none;
+}
+
+/* Hide fill on non-active dots (dot is solid bg colour, no fill needed) */
+.nav-dot:not(.is-active) .dot-fill {
+  opacity: 0;
+}
+.nav-dot.is-active .dot-fill {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   LAYER B — TEXT LINKS  (hover / pill state)
+═══════════════════════════════════════════════════ */
+.layer-links {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  z-index: 2;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease 0s;
+}
+
+#nav[data-state="pill"] .layer-links {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.22s;
+}
+
+/* Divider */
+.nav-divider {
+  width: 1px; height: 14px;
+  background: rgba(255,255,255,0.10);
+  flex-shrink: 0;
+}
+
+/* Link */
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 13px;
+  font-family: 'Unbounded', monospace;
+  font-size: 8px; font-weight: 300;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  white-space: nowrap;
+  border: none; background: none;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+.nav-link:hover     { color: rgba(255,255,255,0.90); }
+.nav-link.is-active { color: rgba(255,255,255,0.95); }
+
+/* Active indicator pip above label */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  top: 7px; left: 50%;
+  translate: -50% 0;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--clr-gold);
+  scale: 0;
+  transition: scale 0.25s var(--ease-spring);
+}
+.nav-link.is-active::after { scale: 1; }
+
+/* ═══════════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(45,74,62,.3); border-radius: 3px; }
