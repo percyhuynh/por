@@ -23,18 +23,18 @@
   ─────────────────────────────────────────── */
   const SECTIONS = [
     { id: 's0', name: 'Visual System' },
-    { id: 's1', name: 'Photography'   },
-    { id: 's2', name: 'Illustration'  },
-    { id: 's3', name: '3D'            },
-    { id: 's4', name: 'Website'       },
-    { id: 's5', name: 'Credits'       },
+    { id: 's1', name: 'Photography' },
+    { id: 's2', name: 'Illustration' },
+    { id: 's3', name: '3D' },
+    { id: 's4', name: 'Website' },
+    { id: 's5', name: 'Credits' },
   ];
 
   /* ───────────────────────────────────────────
      DOM
   ─────────────────────────────────────────── */
-  const nav        = document.getElementById('nav');
-  const layerDots  = document.getElementById('layerDots');
+  const nav = document.getElementById('nav');
+  const layerDots = document.getElementById('layerDots');
   const layerLinks = document.getElementById('layerLinks');
 
   /* ───────────────────────────────────────────
@@ -72,7 +72,7 @@
       layerLinks.appendChild(div);
     }
     const btn = document.createElement('button');
-    btn.className   = 'nav-link';
+    btn.className = 'nav-link';
     btn.textContent = sec.name;
     btn.setAttribute('role', 'listitem');
     btn.setAttribute('aria-label', `Go to ${sec.name}`);
@@ -88,13 +88,13 @@
   ─────────────────────────────────────────── */
   let isHovered = false;
   let activeIdx = 0;
-  let rafId     = null;
+  let rafId = null;
 
   function applyState() {
     nav.dataset.state = isHovered ? 'pill' : 'dots';
   }
 
-  nav.addEventListener('mouseenter', () => { isHovered = true;  applyState(); });
+  nav.addEventListener('mouseenter', () => { isHovered = true; applyState(); });
   nav.addEventListener('mouseleave', () => { isHovered = false; applyState(); });
 
   /* ───────────────────────────────────────────
@@ -109,7 +109,7 @@
   ─────────────────────────────────────────── */
   function getSectionProgress(el) {
     const { top } = el.getBoundingClientRect();
-    const h       = el.offsetHeight;
+    const h = el.offsetHeight;
     // 0% = section top hits top of viewport
     // 100% = section bottom hits top of viewport
     return Math.min(1, Math.max(0, -top / h));
@@ -144,15 +144,15 @@
     const current = getActiveSection();
 
     SECTIONS.forEach(({ id }, i) => {
-      const el              = document.getElementById(id);
-      const p               = el ? getSectionProgress(el) : 0;
-      const { dot, fill }   = dotEls[i];
+      const el = document.getElementById(id);
+      const p = el ? getSectionProgress(el) : 0;
+      const { dot, fill } = dotEls[i];
 
-      const isActive  = (i === current) && (p > 0.001);
+      const isActive = (i === current) && (p > 0.001);
       const isVisited = (p >= 0.999);
 
       /* ── Class states (drive CSS width morph) ── */
-      dot.classList.toggle('is-active',  isActive);
+      dot.classList.toggle('is-active', isActive);
       dot.classList.toggle('is-visited', isVisited);
 
       /* ── Fill width: only meaningful on active dot ── */
@@ -186,3 +186,12 @@
   render();
 
 })();
+
+
+// JS SECTION 2
+var typed = new Typed(".input", {
+  strings: ["Frontend Developer", "UX Designer", "Web Developer"],
+  typedSpeed: 70,
+  backSpeed: 55,
+  loop: true
+})

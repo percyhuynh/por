@@ -7,22 +7,133 @@
   /* Brand */
   --clr-bg:      #f0ece4;
   --clr-ink:     #1a1612;
-  --clr-muted:   #9b9187;
-  --clr-accent:  #2d4a3e;
-  --clr-gold:    #c4783a;
+  --clr-muted:   #ffffff;
+  --clr-accent:  #605d5d;
+  --clr-gold:    #ffffff;
+
+/* <----MENU----> */
+
+/* --- HỆ KHUNG HEADER & NAV --- */
+header {
+    
+    
+    
+    height: 100px;
+
+    position: fixed; /* Dán cứng vào màn hình */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Căn giữa lại do dùng fixed */
+    width: 100%;
+    z-index: 1000; /* Đảm bảo nó luôn nằm trên các section */
+    padding: 30px 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    pointer-events: none; /* Để có thể click xuyên qua vùng trống của header vào section bên dưới */
+}
+
+header * {
+    pointer-events: auto; /* Cho phép các nút trong menu click được bình thường */
+}
+
+
+.navlinks {
+    list-style: none;
+    display: flex;           /* Cho các mục nằm ngang hàng */
+    align-items: flex-start; /* GIỮ TẤT CẢ THẲNG HÀNG Ở ĐỈNH */
+    gap: 2.5px;               /* ĐIỀU CHỈNH KHOẢNG CÁCH GIỮA CÁC MỤC Ở ĐÂY */
+    padding: 0;
+    margin: 0;
+}
+
+/* --- 1. LOGO --- */
+.logo {
+    background-color: var(--pill-bg);
+    color: #fff;
+    height: 40px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+    transition: 0.3s;
+    background-color: rgb(170, 170, 170, 0.5); 
+}
+.logo:hover { background-color: var(--pill-hover-bg); 
+  transform: translateY(-2px); 
+}
+
+/* --- 2. SMART CONTAINER (About / Work) --- */
+.smart-container {
+    position: relative;
+    width: 90px; 
+    height: 40px; 
+    transition: width var(--transition-speed) var(--bezier);
+}
+
+.smart-box {
+    position: absolute; 
+    top: 0; left: 1px;
+    z-index: 100;
+    width: 100%; height: 100%;
+    background-color: var(--pill-bg);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    /* border: 1px solid rgba(255, 255, 255, 0.1); */
+    overflow: hidden; 
+    transition: height var(--transition-speed) var(--bezier), 
+                border-radius var(--transition-speed), 
+                background-color 0.3s;
+    background-color: rgb(170, 170, 170, 0.5); 
+}
+
+.smart-container:hover { width: 320px; } /* Đẩy các mục bên cạnh ra */
+
+.smart-container:hover .smart-box {
+    height: 320px; 
+    border-radius: 20px; 
+    background-color: rgb(170, 170, 170, 0.5); 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* Nhãn chữ lúc đầu */
+.box-label {
+    width: 100%; height: 40px; 
+    display: flex; justify-content: center; align-items: center;
+    color: var(--text-white); font-weight: 500; font-size: 14px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+.smart-container:hover .box-label { transform: translateY(-100%); opacity: 0; }
+
+/* Nội dung ẩn bên trong */
+.box-hidden-content {
+    opacity: 0; visibility: hidden; padding: 30px; 
+    transform: translateY(20px);
+    transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+}
+.smart-container:hover .box-hidden-content { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.content-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.content-top h3 { color: #fff; font-size: 22px; margin: 0; }
+.content-top a { color: #eee; font-size: 10px; border: 1px solid #fff; padding: 4px 10px; border-radius: 20px; }
+.box-hidden-content p { color: #fff; font-size: 14px; line-height: 1.5; margin-top: 10px; }
+
+
 
   /* Nav shell */
   --nav-h:          38px;
   --nav-w-compact:  190px;   /* idle/bar: auto-fit to dots  */
-  --nav-w-pill:     460px;   /* hover: full menu width       */
+  --nav-w-pill:     600px;   /* hover: full menu width       */
   --nav-r:          99px;
-  --nav-bg:         rgba(22, 18, 14, 0.70);
-  --nav-bg-open:    rgba(14, 11,  8, 0.88);
-  --nav-border:     rgba(255, 255, 255, 0.09);
+  --nav-bg:         rgba(86, 85, 83, 0.5);
+  --nav-bg-open:    rgba(86, 85, 83, 0.75);
+  /* --nav-border:     rgba(255, 255, 255, 0.09); */
 
   /* Each dot (idle) */
   --dot-d:          7px;     /* diameter when resting        */
-  --dot-gap:        10px;    /* space between dots           */
+  --dot-gap:        14px;    /* space between dots           */
 
   /* Active dot expands into a bar */
   --bar-w:          52px;    /* width of the expanded bar    */
@@ -58,7 +169,7 @@ body {
   overflow: hidden;
 }
 .s1 { background: #f3bbbb; }
-.s2 { background: #e6dfd3; }
+.s2 { background: #656565; }
 .s3 { background: #2d4a3e; color: #cfc9bf; }
 .s3 .lbl, .s3 .body { color: rgba(207,201,191,0.50); }
 .s4 { background: #181410; color: #e6e0d4; }
@@ -95,20 +206,21 @@ body {
 ═══════════════════════════════════════════════════ */
 #nav {
   position: fixed;
-  top: 22px;
-  left: 50%;
+  top: 31px;
+  left: 65.59%;
   transform: translateX(-50%);
   z-index: 9999;
 
   height: var(--nav-h);
   width: var(--nav-w-compact);
+  /* width: 190px; */
   border-radius: var(--nav-r);
   overflow: hidden;
 
   background: var(--nav-bg);
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border: 1px solid var(--nav-border);
+  /* border: 1px solid var(--nav-border); */
   box-shadow: 0 4px 28px rgba(0,0,0,0.22),
               inset 0 1px 0 rgba(255,255,255,0.07);
   cursor: pointer;
@@ -177,7 +289,7 @@ body {
 /* Visited dot → stay as dot, accent colour */
 .nav-dot.is-visited {
   width:      var(--dot-d);
-  background: rgba(196, 120, 58, 0.45);
+  background: #ffffffd8;
 }
 
 /* ── Horizontal fill inside each dot ── */
@@ -227,11 +339,11 @@ body {
 }
 
 /* Divider */
-.nav-divider {
+/* .nav-divider {
   width: 1px; height: 14px;
-  background: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.1);
   flex-shrink: 0;
-}
+} */
 
 /* Link */
 .nav-link {
@@ -243,7 +355,7 @@ body {
   font-family: 'Unbounded', monospace;
   font-size: 8px; font-weight: 300;
   letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(255,255,255,0.38);
+  color: rgba(255,255,255,0.30);
   white-space: nowrap;
   border: none; background: none;
   cursor: pointer;
@@ -272,3 +384,97 @@ body {
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(45,74,62,.3); border-radius: 3px; }
+
+
+
+
+/* <------SECTION 2------> */
+* {
+    box-sizing: border-box;
+    padding: 0; margin: 0;
+    font-family: Georgia, serif;
+    text-decoration: none;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* --- HERO SECTION --- */
+.hero-header {
+    width: 100%;
+    min-height: 100vh;
+    /* background: #5e8567; */
+}
+
+.wrapper {
+    width: 1280px;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 4rem;
+}
+
+.hero-pic {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 12px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.hero-pic img {
+    height: 100%; width: 100%;
+    object-fit: cover;
+    transition: 0.5s;
+}
+.hero-pic img:hover { transform: scale(1.1); }
+
+.hero-text {
+    max-width: 500px;
+    color: #fff;
+}
+
+.hero-text h5 { font-size: 16px; font-weight: 400; opacity: 0.8; }
+.hero-text h5 span { color: #000000; font-weight: 600; }
+.hero-text h1 {font-family: 'Unbounded', sans-serif; font: 3.5rem; margin: 10px 0; line-height: 1.2; }
+.hero-text p { font-size: 15px; line-height: 1.6; opacity: 0.9; }
+
+/* Buttons */
+.btn-group { margin: 40px 0; }
+.btn-group .btn {
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: 2px solid #fff;
+    color: #fff;
+    margin-right: 10px;
+    transition: 0.3s;
+    display: inline-block;
+}
+.btn.active { background: #fff; color: #5e8567; }
+.btn:hover { background: rgba(255,255,255,0.2); }
+
+/* Social Icons */
+.social { display: flex; gap: 15px; }
+.social i {
+    color: #fff; font-size: 20px;
+    transition: 0.4s; cursor: pointer;
+}
+.social i:hover { transform: translateY(-5px) rotate(360deg); color: #2a2a28; }
+
+/* Mobile Hero Responsive */
+@media(max-width:768px) {
+    .container { flex-direction: column; text-align: center; padding-top: 2rem; }
+    .hero-text { padding: 40px 0; }
+    .social { justify-content: center; }
+}
+
+
+

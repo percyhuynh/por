@@ -1,73 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nav — Dot-to-Bar Progress</title>
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style-side-nav.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style-side-nav.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
 </head>
+
 <body>
+<div class="hero-header">
+  <div class="wrapper">
+    
+    <!-- HEADER: Chứa Logo, Nút Menu và Danh sách Link -->
+    <header>
+      <a href="#" class="logo"><i class="fa-solid fa-layer-group"></i></a>
+      
+      <!-- Nút toggle cho mobile -->
+      <nav>
+        <div class="togglebtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
 
-  <section class="section s1" id="s0">
-    <div class="lbl">01 — Visual System</div>
-    <h1 class="ttl">The Language<br>of Form</h1>
-    <p class="body">A cohesive visual identity built from first principles — typography, spacing, color, and motion unified into a single expressive system.</p>
-    <div class="ghost">01</div>
-  </section>
+      <!-- DANH SÁCH MENU -->
+      <ul class="navlinks">
 
-  <section class="section s2" id="s1">
-    <div class="lbl">02 — Photography</div>
-    <h1 class="ttl">Light as<br>Medium</h1>
-    <p class="body">Each frame is a considered decision. Documentary instinct meets precise composition — capturing the unguarded moment within a structured visual architecture.</p>
-    <div class="ghost">02</div>
-  </section>
+        <!-- MỤC 1: ABOUT -->
+        <li class="smart-container">
+          <div class="smart-box">
+            
+            <!-- Label hiển thị -->
+            <div class="box-label"><span>About</span></div>
 
-  <section class="section s3" id="s2">
-    <div class="lbl">03 — Illustration</div>
-    <h1 class="ttl">Drawing<br>Thought</h1>
-    <p class="body">Hand and concept in dialogue. Illustration as a way of thinking — working through ideas with line, texture, and the honest imprecision of making.</p>
-    <div class="ghost">03</div>
-  </section>
+            <!-- Nội dung ẩn -->
+            <div class="box-hidden-content">
+              <div class="content-top">
+                <h3>About</h3>
+                <a href="#">VISIT SITE</a>
+              </div>
+              <p>We believe brands are not to be reasoned with. They are hearts to be won.</p>
+              <p style="font-size: 12px; color: #aaa; margin-top: 15px;">TinyWins builds brands that remain relevant and differentiated.</p>
+            </div> <!-- End .box-hidden-content -->
+          
+          </div> <!-- End .smart-box -->
+        </li> <!-- End .smart-container (Mục 1) -->
 
-  <section class="section s4" id="s3">
-    <div class="lbl">04 — 3D</div>
-    <h1 class="ttl">Objects<br>in Space</h1>
-    <p class="body">Three dimensions as a design surface — volumetric thinking applied to brand, product, and environment, bridging the material and the rendered world.</p>
-    <div class="ghost">04</div>
-  </section>
 
-  <section class="section s5" id="s4">
-    <div class="lbl">05 — Website</div>
-    <h1 class="ttl">Interface<br>as Experience</h1>
-    <p class="body">Screens that earn attention. Digital architecture designed for clarity and delight — where interaction design and visual craft are inseparable.</p>
-    <div class="ghost">05</div>
-  </section>
+        <!-- MỤC 2: WORK -->
+        <li class="smart-container" style="width: 140px;">
+          <div class="smart-box">
 
-  <section class="section s6" id="s5">
-    <div class="lbl">06 — Credits</div>
-    <h1 class="ttl">Collaboration<br>&amp; Thanks</h1>
-    <p class="body">Every project is a confluence of trust — a record of the people, partnerships, and institutions that made this body of work possible.</p>
-    <div class="ghost">06</div>
-  </section>
+            <div class="box-label">
+              <span>Work with us</span>
+            </div>
 
-  <!--
+            <div class="box-hidden-content">
+              <div class="content-top">
+                <h3>Work</h3>
+                <a href="#">CONTACT</a>
+              </div>
+              <p>Ready to start a project? Let's build something amazing together.</p>
+            </div> <!-- End .box-hidden-content -->
+
+          </div> <!-- End .smart-box -->
+        </li> <!-- End .smart-container (Mục 2) -->
+
+      </ul> <!-- End .navlinks (Đóng danh sách tại đây là chuẩn) -->
+    
+    </header> <!-- End header -->
+
+
+    <!-- BANNER IMAGE -->
+    <section class="banner">
+      <picture>
+        <source media="(max-width: 767px)" srcset="banner-mobile.jpg">
+        <source media="(max-width: 1024px)" srcset="banner-tablet.jpg">
+        <img src="images/banner-destop.png" alt="Banner chính website" class="hero-img">
+      </picture>
+    </section>
+
+    <!-- BANNER TEXT -->
+    <div class="content-baner">
+      <h1>Tiêu đề chính</h1>
+      <p>Mô tả ngắn hoặc thông điệp chính</p>
+      <a href="#" class="baner">Xem ngay</a>
+    </div>
+
+  </div> <!-- End .wrapper -->
+</div> <!-- End .hero-header -->
+
+            <section class="section s1" id="s0">
+              <div class="lbl">01 — Visual System</div>
+              <h1 class="ttl">The Language<br>of Form</h1>
+              <p class="body">A cohesive visual identity built from first principles — typography, spacing, color, and
+                motion unified into a single expressive system.</p>
+              <div class="ghost">01</div>
+            </section>
+
+            <section class="section s2" id="s1">
+              <div class="lbl">02 — Photography</div>
+              <h1 class="ttl">Light as<br>Medium</h1>
+              <p class="body">Each frame is a considered decision. Documentary instinct meets precise composition —
+                capturing the unguarded moment within a structured visual architecture.</p>
+              <!-- <div class="ghost">02</div> -->
+
+              <div class="container">
+                <div class="hero-pic">
+                  <img src="images/" alt="profile pic">
+                </div>
+                <div class="hero-text">
+                  <h5>Hi I'm <span class="input">Frontend Developer</span></h5>
+                  <h1>Percy Huynh</h1>
+                  <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta delectus dolorum
+                    quibusdam maiores magni quod rem in porro, laborum, laudantium ex repellendus explicabo,
+                    autem molestiae!
+                  </p>
+
+                  <div class="btn-group">
+                    <a href="#" class="btn active">Download</a>
+                    <a href="#" class="btn">Contact</a>
+                  </div>
+
+                  <div class="social">
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-dribbble"></i></a>
+                    <a href="#"><i class="fa-brands fa-pintrest"></i></a>
+                  </div>
+                </div>
+
+            </section>
+
+            <section class="section s3" id="s2">
+              <div class="lbl">03 — Illustration</div>
+              <h1 class="ttl">Drawing<br>Thought</h1>
+              <p class="body">Hand and concept in dialogue. Illustration as a way of thinking — working through ideas
+                with line, texture, and the honest imprecision of making.</p>
+              <div class="ghost">03</div>
+            </section>
+
+            <section class="section s4" id="s3">
+              <div class="lbl">04 — 3D</div>
+              <h1 class="ttl">Objects<br>in Space</h1>
+              <p class="body">Three dimensions as a design surface — volumetric thinking applied to brand, product, and
+                environment, bridging the material and the rendered world.</p>
+              <div class="ghost">04</div>
+            </section>
+
+            <section class="section s5" id="s4">
+              <div class="lbl">05 — Website</div>
+              <h1 class="ttl">Interface<br>as Experience</h1>
+              <p class="body">Screens that earn attention. Digital architecture designed for clarity and delight — where
+                interaction design and visual craft are inseparable.</p>
+              <div class="ghost">05</div>
+            </section>
+
+            <section class="section s6" id="s5">
+              <div class="lbl">06 — Credits</div>
+              <h1 class="ttl">Collaboration<br>&amp; Thanks</h1>
+              <p class="body">Every project is a confluence of trust — a record of the people, partnerships, and
+                institutions that made this body of work possible.</p>
+              <div class="ghost">06</div>
+            </section>
+
+            <!--
     NAV SHELL  ─  data-state controls visual mode:
       "dots"  →  idle: small dots
       "pill"  →  hover: expanded pill with text labels
     Each .nav-dot has its own .dot-fill that tracks its section's scroll.
     Active dot expands into a bar; fill sweeps L→R.
   -->
-  <nav id="nav" data-state="dots" role="navigation" aria-label="Page sections">
+            <nav id="nav" data-state="dots" role="navigation" aria-label="Page sections">
 
-    <!-- DOTS ROW: each dot morphs into a bar on active -->
-    <div class="layer-dots" id="layerDots"></div>
+              <!-- DOTS ROW: each dot morphs into a bar on active -->
+              <div class="layer-dots" id="layerDots"></div>
 
-    <!-- LINKS ROW: shown on hover -->
-    <div class="layer-links" id="layerLinks"></div>
+              <!-- LINKS ROW: shown on hover -->
+              <div class="layer-links" id="layerLinks"></div>
 
-  </nav>
+            </nav>
 
-  <script src="nav.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js"></script>
+            <script src="nav.js"></script>
 </body>
+
 </html>
