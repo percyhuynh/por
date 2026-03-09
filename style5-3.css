@@ -1,0 +1,99 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --x: -50%;
+  --y: -50%;
+  --reveal-size: 160px;
+}
+
+body {
+  background: #000;
+  font-family: "Courier New", Courier, monospace;
+  color: white;
+  overflow: hidden;
+}
+
+.reveal-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bg {
+  position: absolute;
+  /* Mở rộng kích thước bg để khi xoay/scale không bị hở viền */
+  inset: -10%;
+  background-image: url("https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560");
+  background-size: cover;
+  background-position: center;
+}
+
+/* LỚP QUAN TRỌNG: Tạo sọc chéo */
+.streaky-blur {
+  z-index: 1;
+  /* Áp dụng filter SVG đã định nghĩa trong HTML */
+  filter: url(#diagonal-streak) brightness(0.7);
+
+  /* Xoay 1 góc để sọc ngang thành sọc chéo và phóng to để lấp đầy màn hình */
+  transform: rotate(-15deg) scale(1.4);
+
+  /* Mặt nạ đục lỗ tròn */
+  -webkit-mask-image: radial-gradient(
+    var(--reveal-size) circle at var(--x) var(--y),
+    transparent 0%,
+    black 80%
+  );
+  mask-image: radial-gradient(
+    var(--reveal-size) circle at var(--x) var(--y),
+    transparent 0%,
+    black 80%
+  );
+}
+
+.sharp {
+  z-index: 0;
+}
+
+/* Nội dung chữ */
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 60px;
+  max-width: 900px;
+  pointer-events: none;
+}
+
+nav {
+  letter-spacing: 3px;
+  margin-bottom: 12vh;
+  font-size: 1.2rem;
+}
+
+.member {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px 0 60px 0;
+}
+
+.member h3 {
+  font-size: 1rem;
+  font-weight: normal;
+}
+.description {
+  max-width: 500px;
+}
+.role {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.description p:not(.role) {
+  line-height: 1.6;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}

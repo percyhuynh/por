@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Motion Blur Spotlight</title>
+    <link rel="stylesheet" href="style5-3.css" />
+  </head>
+  <body>
+    <!-- Định nghĩa bộ lọc nhòe sọc (Motion Blur) -->
+    <svg style="display: none">
+      <filter id="diagonal-streak">
+        <!-- stdDeviation="khoảng_cách_nhòe_ngang 0" tạo sọc ngang -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="35 1.8" />
+      </filter>
+    </svg>
+
+    <div class="reveal-container" id="handler">
+      <!-- Lớp ảnh gốc rõ nét -->
+      <div class="bg sharp"></div>
+
+      <!-- Lớp ảnh nhòe sọc chéo -->
+      <div class="bg streaky-blur"></div>
+
+      <main class="content">
+        <nav>NOTRE ÉQUIPE</nav>
+        <section class="member">
+          <div class="sidebar"><h3>• Charles Montambault</h3></div>
+          <div class="description">
+            <p class="role">Co-fondateur et responsable de l'innovation</p>
+            <p>
+              Concepteur sonore et responsable R&D, Charles porte la vision de
+              paysages studio. Il crée des expériences immersives axées sur le
+              bien-être...
+            </p>
+          </div>
+        </section>
+        <section class="member">
+          <div class="sidebar"><h3>• Daniel Boisclair</h3></div>
+          <div class="description">
+            <p class="role">Co-fondateur et responsable des opérations</p>
+            <p>
+              Producteur et codirecteur créatif, Daniel œuvre depuis plus de dix
+              ans dans les arts numériques...
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const container = document.getElementById("handler");
+      window.addEventListener("mousemove", (e) => {
+        container.style.setProperty("--x", e.clientX + "px");
+        container.style.setProperty("--y", e.clientY + "px");
+      });
+    </script>
+  </body>
+</html>

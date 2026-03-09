@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Giao diện Portfolio 9 ảnh</title>
+    <style>
+      /* 1. Thiết lập nền đen và phông chữ */
+      body {
+        background-color: #000;
+        margin: 0;
+        padding: 20px;
+        font-family: sans-serif;
+      }
+
+      /* 2. Cấu hình Lưới (Grid) */
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Chia làm 3 cột bằng nhau */
+        gap: 15px; /* Khoảng cách giữa các ảnh */
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* 3. Cấu hình Card (Kế thừa từ bài trước) */
+      .card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        background-color: #1a1a1a;
+        /* Mỗi card sẽ có chiều cao tự động theo nội dung hoặc ta sẽ set riêng */
+      }
+
+      /* Tạo các độ cao khác nhau để nhìn giống Masonry (So le) */
+      .height-sm {
+        height: 250px;
+      }
+      .height-md {
+        height: 350px;
+      }
+      .height-lg {
+        height: 450px;
+      }
+
+      .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%);
+        transition: all 0.6s ease;
+      }
+
+      /* Hiệu ứng Hover: Zoom + Có màu */
+      .card:hover img {
+        filter: grayscale(0%);
+        transform: scale(1.1);
+      }
+
+      /* Nút bấm Overlay */
+      .btn-overlay {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        color: white;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gallery">
+      <!-- Ảnh 1 -->
+      <div class="card height-md">
+        <img src="https://picsum.photos/400/500?random=1" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Ảnh 2 -->
+      <div class="card height-lg">
+        <img src="https://picsum.photos/400/700?random=2" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Ảnh 3 -->
+      <div class="card height-md">
+        <img src="https://picsum.photos/400/510?random=3" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Ảnh 4 -->
+      <div class="card height-lg">
+        <img src="https://picsum.photos/400/710?random=4" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Ảnh 5 -->
+      <div class="card height-md">
+        <img src="https://picsum.photos/400/520?random=5" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Ảnh 6 -->
+      <div class="card height-lg">
+        <img src="https://picsum.photos/400/720?random=6" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+
+      <!-- Thêm đủ 9 ảnh với các class height khác nhau... -->
+      <div class="card height-sm">
+        <img src="https://picsum.photos/400/300?random=7" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+      <div class="card height-md">
+        <img src="https://picsum.photos/400/530?random=8" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+      <div class="card height-sm">
+        <img src="https://picsum.photos/400/310?random=9" />
+        <div class="btn-overlay">View Casestudy ↗</div>
+      </div>
+    </div>
+  </body>
+</html>
