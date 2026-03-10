@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scroll Journey</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --accent: #3b4fe8;
+        --mid: #5b73f5;
+        --light: #7b96ff;
+        --text: #1a1e3c;
+        --muted: #8892c8;
+        --bg: #f0f2fa;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        overflow-x: hidden;
+      }
+
+      /* ── SECTIONS ───────────────────────────────────── */
+      .section {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        will-change: transform, opacity;
+      }
+      .section--1 {
+        background: #f0f2fa;
+      }
+      .section--2 {
+        background: #eaedfa;
+      }
+      .section--3 {
+        background: #f5f6fc;
+      }
+      .section--4 {
+        background: #e8ecfd;
+      }
+      .section--5 {
+        background: #f0f2fa;
+      }
+
+      /* ── CONTENT ────────────────────────────────────── */
+      .section-inner {
+        position: relative;
+        z-index: 2;
+        width: min(780px, 90vw);
+        padding: clamp(2rem, 5vh, 5rem) clamp(1rem, 4vw, 2.5rem);
+        text-align: center;
+      }
+      .section__tag {
+        display: block;
+        font-size: clamp(0.58rem, 1.1vw, 0.7rem);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: clamp(0.7rem, 1.8vh, 1.2rem);
+      }
+      .section__title {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 300;
+        font-size: clamp(2.2rem, 5.5vw, 5.5rem);
+        line-height: 1.06;
+        color: var(--text);
+        margin-bottom: clamp(0.9rem, 2.2vh, 1.5rem);
+      }
+      .section__title em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .section__body {
+        font-size: clamp(0.7rem, 1.35vw, 0.87rem);
+        line-height: 1.95;
+        color: var(--muted);
+        max-width: min(480px, 100%);
+        margin: 0 auto;
+      }
+      .h-rule {
+        width: clamp(26px, 3.5vw, 42px);
+        height: 1px;
+        background: var(--accent);
+        opacity: 0.32;
+        margin: clamp(0.9rem, 2.2vh, 1.5rem) auto;
+      }
+
+      /* ── BLOB ───────────────────────────────────────── */
+      .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(clamp(35px, 7vw, 90px));
+        opacity: 0.14;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── CANVAS (replaces SVG for drawing effect) ───── */
+      .line-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* ── LINE HUD ───────────────────────────────────── */
+      .line-hud {
+        position: absolute;
+        bottom: clamp(1rem, 3vh, 2rem);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.45rem;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+      }
+      .line-hud.show {
+        opacity: 1;
+      }
+      .lhud-track {
+        width: clamp(70px, 14vw, 130px);
+        height: 2px;
+        background: rgba(59, 79, 232, 0.14);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .lhud-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--light));
+        border-radius: 2px;
+        transition: width 0.05s linear;
+      }
+      .lhud-label {
+        font-size: clamp(0.55rem, 1vw, 0.62rem);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: color 0.3s ease;
+      }
+      .lhud-label.done {
+        color: var(--accent);
+      }
+
+      /* ── CHEVRON NUDGE ──────────────────────────────── */
+      .scroll-nudge {
+        position: absolute;
+        bottom: clamp(1rem, 3vh, 2rem);
+        right: clamp(1rem, 2.5vw, 1.8rem);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+      }
+      .scroll-nudge.show {
+        opacity: 1;
+      }
+      .nudge-text {
+        font-size: clamp(0.55rem, 1vw, 0.62rem);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .nudge-chevs {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .nudge-chevs span {
+        display: block;
+        width: 9px;
+        height: 4px;
+        border-right: 1.5px solid var(--muted);
+        border-bottom: 1.5px solid var(--muted);
+        transform: rotate(45deg);
+        animation: chev 1.3s ease-in-out infinite;
+      }
+      .nudge-chevs span:nth-child(2) {
+        animation-delay: 0.18s;
+        opacity: 0.7;
+      }
+      .nudge-chevs span:nth-child(3) {
+        animation-delay: 0.36s;
+        opacity: 0.4;
+      }
+      @keyframes chev {
+        0%,
+        100% {
+          opacity: 0.25;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* ── PROGRESS BAR ───────────────────────────────── */
+      #progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--light));
+        width: 0%;
+        z-index: 1000;
+      }
+
+      /* ── NAV DOTS ───────────────────────────────────── */
+      #nav-dots {
+        position: fixed;
+        right: clamp(0.7rem, 1.8vw, 1.4rem);
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        z-index: 999;
+      }
+      .nav-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+        opacity: 0.32;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .nav-dot.active {
+        background: var(--accent);
+        opacity: 1;
+        transform: scale(1.65);
+      }
+
+      /* ── SCROLL HINT ────────────────────────────────── */
+      #scroll-hint {
+        position: fixed;
+        bottom: clamp(1.2rem, 3vh, 2rem);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.38rem;
+        opacity: 0.42;
+        font-size: clamp(0.58rem, 1vw, 0.64rem);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        z-index: 998;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+      }
+      #scroll-hint .sh-line {
+        width: 1px;
+        height: 28px;
+        background: linear-gradient(to bottom, transparent, var(--muted));
+        animation: sh 1.8s ease-in-out infinite;
+      }
+      @keyframes sh {
+        0%,
+        100% {
+          transform: scaleY(1);
+          opacity: 0.38;
+        }
+        50% {
+          transform: scaleY(1.45);
+          opacity: 1;
+        }
+      }
+
+      /* ── S1 ghost ───────────────────────────────────── */
+      .hero-number {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(6rem, 17vw, 16rem);
+        font-weight: 600;
+        position: absolute;
+        color: rgba(59, 79, 232, 0.042);
+        line-height: 1;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+      }
+
+      /* ── S3 stats ───────────────────────────────────── */
+      .stat-row {
+        display: flex;
+        gap: clamp(1.4rem, 4vw, 3.5rem);
+        justify-content: center;
+        margin-top: clamp(1.4rem, 3vh, 2.5rem);
+        flex-wrap: wrap;
+      }
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.28rem;
+      }
+      .stat__num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.9rem, 3.8vw, 3.2rem);
+        font-weight: 300;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .stat__label {
+        font-size: clamp(0.56rem, 0.9vw, 0.64rem);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* ── S5 CTA ─────────────────────────────────────── */
+      .cta-btn {
+        display: inline-block;
+        margin-top: clamp(1.2rem, 2.8vh, 2rem);
+        padding: 0.82rem clamp(1.4rem, 3vw, 2.5rem);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        font-family: "DM Mono", monospace;
+        font-size: clamp(0.62rem, 1.1vw, 0.74rem);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-decoration: none;
+        background: transparent;
+        cursor: pointer;
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      .cta-btn:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="progress-bar"></div>
+    <nav id="nav-dots">
+      <div class="nav-dot active" data-index="0"></div>
+      <div class="nav-dot" data-index="1"></div>
+      <div class="nav-dot" data-index="2"></div>
+      <div class="nav-dot" data-index="3"></div>
+      <div class="nav-dot" data-index="4"></div>
+    </nav>
+    <div id="scroll-hint">
+      <span>scroll</span>
+      <div class="sh-line"></div>
+    </div>
+
+    <!-- S1 -->
+    <section class="section section--1" id="s1">
+      <span class="hero-number">01</span>
+      <div
+        class="blob"
+        style="
+          width: 38vw;
+          height: 38vw;
+          background: var(--light);
+          top: -6%;
+          left: -6%;
+        "
+      ></div>
+      <div class="section-inner">
+        <span class="section__tag">Chapter 01 &nbsp;·&nbsp; Origin</span>
+        <h2 class="section__title">
+          Every journey<br /><em>begins</em> with<br />a single line.
+        </h2>
+        <div class="h-rule"></div>
+        <p class="section__body">
+          Scroll to follow the path. A continuous thread connects five moments —
+          each one a new perspective, all part of the same story.
+        </p>
+      </div>
+    </section>
+
+    <!-- S2 · LINE SECTION -->
+    <section class="section section--2" id="s2">
+      <div
+        class="blob"
+        style="
+          width: 40vw;
+          height: 40vw;
+          background: var(--mid);
+          top: 14%;
+          right: -10%;
+        "
+      ></div>
+      <canvas class="line-canvas" id="canvas2"></canvas>
+      <div class="line-hud" id="lhud2">
+        <div class="lhud-track"><div class="lhud-fill" id="lfill2"></div></div>
+        <span class="lhud-label" id="llabel2">Drawing the path…</span>
+      </div>
+      <div class="scroll-nudge" id="nudge2">
+        <span class="nudge-text" id="ntext2">keep scrolling</span>
+        <div class="nudge-chevs"><span></span><span></span><span></span></div>
+      </div>
+      <div class="section-inner">
+        <span class="section__tag">Chapter 02 &nbsp;·&nbsp; Flow</span>
+        <h2 class="section__title">
+          The line<br /><em>loops</em> and<br />finds its way.
+        </h2>
+        <div class="h-rule"></div>
+        <p class="section__body">
+          Motion is not always direct. Sometimes the path spirals inward before
+          it can move forward — and that is precisely where momentum is born.
+        </p>
+      </div>
+    </section>
+
+    <!-- S3 -->
+    <section class="section section--3" id="s3">
+      <div
+        class="blob"
+        style="
+          width: 34vw;
+          height: 34vw;
+          background: var(--accent);
+          bottom: -4%;
+          left: 4%;
+          opacity: 0.1;
+        "
+      ></div>
+      <div class="section-inner">
+        <span class="section__tag">Chapter 03 &nbsp;·&nbsp; Measure</span>
+        <h2 class="section__title">
+          Pause.<br /><em>Reflect.</em><br />Recalibrate.
+        </h2>
+        <div class="h-rule"></div>
+        <p class="section__body">
+          Between every arc and every wave lies a moment of stillness. Data,
+          decisions, and direction all require a breath.
+        </p>
+        <div class="stat-row">
+          <div class="stat">
+            <span class="stat__num">∞</span
+            ><span class="stat__label">Possibilities</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num">1</span
+            ><span class="stat__label">Direction</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num">5</span
+            ><span class="stat__label">Chapters</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4 · LINE SECTION -->
+    <section class="section section--4" id="s4">
+      <div
+        class="blob"
+        style="
+          width: 38vw;
+          height: 38vw;
+          background: var(--light);
+          top: 8%;
+          left: -8%;
+        "
+      ></div>
+      <canvas class="line-canvas" id="canvas4"></canvas>
+      <div class="line-hud" id="lhud4">
+        <div class="lhud-track"><div class="lhud-fill" id="lfill4"></div></div>
+        <span class="lhud-label" id="llabel4">Drawing the path…</span>
+      </div>
+      <div class="scroll-nudge" id="nudge4">
+        <span class="nudge-text" id="ntext4">keep scrolling</span>
+        <div class="nudge-chevs"><span></span><span></span><span></span></div>
+      </div>
+      <div class="section-inner">
+        <span class="section__tag">Chapter 04 &nbsp;·&nbsp; Resolve</span>
+        <h2 class="section__title">
+          Complexity<br /><em>unravels</em><br />into clarity.
+        </h2>
+        <div class="h-rule"></div>
+        <p class="section__body">
+          The line descends from turbulence into a graceful arc. Every
+          oscillation is purposeful — each wave carving the path toward
+          resolution.
+        </p>
+      </div>
+    </section>
+
+    <!-- S5 -->
+    <section class="section section--5" id="s5">
+      <div
+        class="blob"
+        style="
+          width: 32vw;
+          height: 32vw;
+          background: var(--mid);
+          top: 16%;
+          right: 4%;
+          opacity: 0.12;
+        "
+      ></div>
+      <div class="section-inner">
+        <span class="section__tag">Chapter 05 &nbsp;·&nbsp; Arrival</span>
+        <h2 class="section__title">
+          The line<br />always<br /><em>arrives.</em>
+        </h2>
+        <div class="h-rule"></div>
+        <p class="section__body">
+          No matter how many loops, waves, or reversals — every continuous line
+          has a destination. You've followed it to the end.
+        </p>
+        <a class="cta-btn" href="#">Begin again ↑</a>
+      </div>
+    </section>
+
+    <script>
+      /* ══════════════════════════════════════════════════════
+   CONFIG — chỉnh tại đây
+   ══════════════════════════════════════════════════════ */
+      const CONFIG = {
+        zoom: {
+          scaleFrom: 0.9,
+          scaleTo: 1.0,
+          yFrom: 48,
+          duration: 0.85,
+          ease: "power3.out",
+          triggerAt: "top 82%",
+        },
+        line: {
+          scrub: 0.85, // độ trơn: 0 = tức thì, 2 = rất mượt
+          pinScrollDistance: "160vh", // khoảng scroll để vẽ xong đường
+          strokeWidth: 15, // độ dày nét (px, trên màn 1440px)
+          dotRadius: 6, // bán kính "đầu bút" chạy theo
+          dotGlow: 18, // bán kính glow của đầu bút
+          segments: 600, // độ phân giải curve (càng cao càng mượt)
+        },
+      };
+
+      /* ══════════════════════════════════════════════════════
+   CURVE DEFINITIONS
+   Mỗi curve là mảng các điểm bezier được scale theo %
+   (0–1 tương ứng với chiều rộng/cao canvas)
+   ══════════════════════════════════════════════════════ */
+
+      /*
+  Curve 2: Bắt đầu góc trên-trái, tạo vòng lặp tear-drop
+  (giống ảnh tham khảo), rồi S-curve sang phải
+*/
+      function getCurve2(W, H) {
+        return [
+          /* [type, x, y, ...control points] */
+          /* M */ { t: "M", x: W * 0.22, y: 0 },
+          /* vòng lặp tear-drop */
+          {
+            t: "C",
+            x: W * 0.08,
+            y: H * 0.16,
+            c: [
+              [W * 0.22, H * 0.07],
+              [W * 0.1, H * 0.07],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.14,
+            y: H * 0.4,
+            c: [
+              [W * 0.05, H * 0.28],
+              [W * 0.05, H * 0.38],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.26,
+            y: H * 0.22,
+            c: [
+              [W * 0.23, H * 0.4],
+              [W * 0.28, H * 0.31],
+            ],
+          },
+          /* sweep sang phải */
+          {
+            t: "C",
+            x: W * 0.58,
+            y: H * 0.32,
+            c: [
+              [W * 0.24, H * 0.14],
+              [W * 0.5, H * 0.2],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.8,
+            y: H * 0.28,
+            c: [
+              [W * 0.66, H * 0.44],
+              [W * 0.74, H * 0.26],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.97,
+            y: H * 0.42,
+            c: [
+              [W * 0.86, H * 0.3],
+              [W * 0.94, H * 0.38],
+            ],
+          },
+          /* exit góc phải */
+          {
+            t: "C",
+            x: W * 1.04,
+            y: H * 0.65,
+            c: [
+              [W * 1.03, H * 0.5],
+              [W * 1.05, H * 0.58],
+            ],
+          },
+        ];
+      }
+
+      /*
+  Curve 4: Bắt đầu góc trên-phải, vòng lặp ngược,
+  rồi sóng đôi xuống cuối bên trái
+*/
+      function getCurve4(W, H) {
+        return [
+          { t: "M", x: W * 1.03, y: 0 },
+          /* hook sang trái */
+          {
+            t: "C",
+            x: W * 0.82,
+            y: H * 0.15,
+            c: [
+              [W * 1.0, H * 0.07],
+              [W * 0.9, H * 0.09],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.8,
+            y: H * 0.36,
+            c: [
+              [W * 0.74, H * 0.22],
+              [W * 0.74, H * 0.32],
+            ],
+          },
+          /* vòng lặp phải */
+          {
+            t: "C",
+            x: W * 0.97,
+            y: H * 0.49,
+            c: [
+              [W * 0.86, H * 0.44],
+              [W * 0.95, H * 0.42],
+            ],
+          },
+          /* sóng xuống trái */
+          {
+            t: "C",
+            x: W * 0.83,
+            y: H * 0.64,
+            c: [
+              [W * 0.99, H * 0.57],
+              [W * 0.91, H * 0.63],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.52,
+            y: H * 0.57,
+            c: [
+              [W * 0.74, H * 0.66],
+              [W * 0.62, H * 0.6],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.24,
+            y: H * 0.57,
+            c: [
+              [W * 0.42, H * 0.54],
+              [W * 0.33, H * 0.54],
+            ],
+          },
+          {
+            t: "C",
+            x: W * 0.02,
+            y: H * 0.74,
+            c: [
+              [W * 0.15, H * 0.61],
+              [W * 0.08, H * 0.68],
+            ],
+          },
+          /* exit góc dưới-trái */
+          {
+            t: "C",
+            x: -W * 0.06,
+            y: H * 0.94,
+            c: [
+              [W * -0.03, H * 0.82],
+              [W * -0.05, H * 0.88],
+            ],
+          },
+        ];
+      }
+
+      /* ══════════════════════════════════════════════════════
+   CURVE SAMPLER
+   Chuyển mảng bezier sang N điểm đều trên path
+   ══════════════════════════════════════════════════════ */
+      function sampleCurve(segs, N) {
+        /* Bước 1: tạo điểm thô từ mỗi segment */
+        const raw = [];
+        let px = 0,
+          py = 0;
+        for (const s of segs) {
+          if (s.t === "M") {
+            px = s.x;
+            py = s.y;
+            raw.push({ x: px, y: py });
+            continue;
+          }
+          const [c1, c2] = s.c;
+          const STEPS = 80;
+          for (let i = 1; i <= STEPS; i++) {
+            const t = i / STEPS;
+            const u = 1 - t;
+            const x =
+              u * u * u * px +
+              3 * u * u * t * c1[0] +
+              3 * u * t * t * c2[0] +
+              t * t * t * s.x;
+            const y =
+              u * u * u * py +
+              3 * u * u * t * c1[1] +
+              3 * u * t * t * c2[1] +
+              t * t * t * s.y;
+            raw.push({ x, y });
+          }
+          px = s.x;
+          py = s.y;
+        }
+
+        /* Bước 2: tính arcLength tích lũy */
+        const arcLen = [0];
+        for (let i = 1; i < raw.length; i++) {
+          const dx = raw[i].x - raw[i - 1].x;
+          const dy = raw[i].y - raw[i - 1].y;
+          arcLen.push(arcLen[i - 1] + Math.sqrt(dx * dx + dy * dy));
+        }
+        const total = arcLen[arcLen.length - 1];
+
+        /* Bước 3: resample đều theo arcLength */
+        const pts = [];
+        let ri = 0;
+        for (let n = 0; n < N; n++) {
+          const target = (n / (N - 1)) * total;
+          while (ri < arcLen.length - 1 && arcLen[ri + 1] < target) ri++;
+          const t0 = arcLen[ri],
+            t1 = arcLen[ri + 1] ?? t0;
+          const frac = t1 > t0 ? (target - t0) / (t1 - t0) : 0;
+          pts.push({
+            x: raw[ri].x + frac * (raw[ri + 1]?.x - raw[ri].x || 0),
+            y: raw[ri].y + frac * (raw[ri + 1]?.y - raw[ri].y || 0),
+          });
+        }
+        return pts;
+      }
+
+      /* ══════════════════════════════════════════════════════
+   CANVAS DRAWER
+   Vẽ n điểm đầu (0..progress*N) và dot đầu bút
+   ══════════════════════════════════════════════════════ */
+      function drawCanvas(canvas, pts, progress, W, H) {
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, W, H);
+
+        const n = Math.max(1, Math.floor(progress * (pts.length - 1)));
+        if (n < 1) return;
+
+        /* ── Gradient stroke ────────────────────────────── */
+        const grad = ctx.createLinearGradient(
+          pts[0].x,
+          pts[0].y,
+          pts[n].x,
+          pts[n].y,
+        );
+        grad.addColorStop(0, "#3B4FE8");
+        grad.addColorStop(0.5, "#5B73F5");
+        grad.addColorStop(1, "#7B96FF");
+
+        /* Responsive stroke width */
+        const sw = CONFIG.line.strokeWidth * (W / 1440);
+
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i <= n; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = Math.max(2, sw);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+
+        /* ── Đầu bút (dot + glow) ───────────────────────── */
+        if (progress > 0 && progress < 1.005) {
+          const tip = pts[n];
+          const dr = CONFIG.line.dotRadius * (W / 1440);
+          const dg = CONFIG.line.dotGlow * (W / 1440);
+
+          /* glow */
+          const glowGrad = ctx.createRadialGradient(
+            tip.x,
+            tip.y,
+            0,
+            tip.x,
+            tip.y,
+            Math.max(8, dg),
+          );
+          glowGrad.addColorStop(0, "rgba(91,115,245,0.45)");
+          glowGrad.addColorStop(1, "rgba(91,115,245,0)");
+          ctx.beginPath();
+          ctx.arc(tip.x, tip.y, Math.max(8, dg), 0, Math.PI * 2);
+          ctx.fillStyle = glowGrad;
+          ctx.fill();
+
+          /* dot */
+          ctx.beginPath();
+          ctx.arc(tip.x, tip.y, Math.max(2.5, dr), 0, Math.PI * 2);
+          ctx.fillStyle = "#fff";
+          ctx.fill();
+          ctx.lineWidth = Math.max(1.5, sw * 0.7);
+          ctx.strokeStyle = "#3B4FE8";
+          ctx.stroke();
+        }
+      }
+
+      /* ══════════════════════════════════════════════════════
+   SETUP LINE SECTION
+   ══════════════════════════════════════════════════════ */
+      function setupLineSection({
+        sectionId,
+        canvasId,
+        getCurve,
+        fillId,
+        labelId,
+        nudgeTextId,
+        hudId,
+        nudgeId,
+      }) {
+        const sec = document.getElementById(sectionId);
+        const canvas = document.getElementById(canvasId);
+        const fill = document.getElementById(fillId);
+        const label = document.getElementById(labelId);
+        const ntext = document.getElementById(nudgeTextId);
+        const hud = document.getElementById(hudId);
+        const nudge = document.getElementById(nudgeId);
+        if (!sec || !canvas) return;
+
+        let pts = [];
+        let W = 0,
+          H = 0;
+
+        /* ── Resize handler: re-sample curve khi cửa sổ thay đổi */
+        function resize() {
+          W = sec.offsetWidth;
+          H = sec.offsetHeight;
+          canvas.width = W;
+          canvas.height = H;
+          pts = sampleCurve(getCurve(W, H), CONFIG.line.segments);
+          /* Vẽ lại ngay với progress hiện tại */
+          drawCanvas(canvas, pts, currentProgress, W, H);
+        }
+
+        let currentProgress = 0;
+
+        /* ── HUD visibility */
+        ScrollTrigger.create({
+          trigger: sec,
+          start: "top top",
+          end: `+=${CONFIG.line.pinScrollDistance}`,
+          onEnter: () => {
+            hud?.classList.add("show");
+            nudge?.classList.add("show");
+          },
+          onLeave: () => {
+            hud?.classList.remove("show");
+            nudge?.classList.remove("show");
+          },
+          onEnterBack: () => {
+            hud?.classList.add("show");
+            nudge?.classList.add("show");
+          },
+          onLeaveBack: () => {
+            hud?.classList.remove("show");
+            nudge?.classList.remove("show");
+          },
+        });
+
+        /* ── Pin + scrub */
+        ScrollTrigger.create({
+          trigger: sec,
+          start: "top top",
+          end: `+=${CONFIG.line.pinScrollDistance}`,
+          pin: true,
+          scrub: CONFIG.line.scrub,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            currentProgress = self.progress;
+            drawCanvas(canvas, pts, currentProgress, W, H);
+
+            if (fill) fill.style.width = currentProgress * 100 + "%";
+            const done = currentProgress >= 0.98;
+            if (label) {
+              label.textContent = done
+                ? "Path complete ✓"
+                : "Drawing the path…";
+              label.classList.toggle("done", done);
+            }
+            if (ntext) {
+              ntext.textContent = done ? "next section ↓" : "keep scrolling";
+            }
+          },
+        });
+
+        /* ── Khởi tạo kích thước */
+        resize();
+        window.addEventListener("resize", resize);
+      }
+
+      /* ══════════════════════════════════════════════════════
+   GSAP INIT
+   ══════════════════════════════════════════════════════ */
+      gsap.registerPlugin(ScrollTrigger);
+
+      const allSections = gsap.utils.toArray(".section");
+      const dots = gsap.utils.toArray(".nav-dot");
+
+      function setActiveDot(i) {
+        dots.forEach((d, j) => d.classList.toggle("active", i === j));
+      }
+
+      /* Progress bar */
+      ScrollTrigger.create({
+        trigger: document.body,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: ({ progress }) => {
+          document.getElementById("progress-bar").style.width =
+            progress * 100 + "%";
+        },
+      });
+
+      /* Ẩn scroll hint */
+      window.addEventListener(
+        "scroll",
+        () => {
+          document.getElementById("scroll-hint").style.opacity = "0";
+        },
+        { once: true },
+      );
+
+      /* Nav dots */
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", () => {
+          gsap.to(window, {
+            duration: 1.1,
+            scrollTo: { y: allSections[i], offsetY: 0 },
+            ease: "power2.inOut",
+          });
+        });
+      });
+
+      /* Zoom tất cả sections */
+      allSections.forEach((sec, i) => {
+        gsap.fromTo(
+          sec,
+          { scale: CONFIG.zoom.scaleFrom, opacity: 0, y: CONFIG.zoom.yFrom },
+          {
+            scale: CONFIG.zoom.scaleTo,
+            opacity: 1,
+            y: 0,
+            duration: CONFIG.zoom.duration,
+            ease: CONFIG.zoom.ease,
+            scrollTrigger: {
+              trigger: sec,
+              start: CONFIG.zoom.triggerAt,
+              toggleActions: "play none none reverse",
+              onEnter: () => setActiveDot(i),
+              onEnterBack: () => setActiveDot(i),
+            },
+          },
+        );
+      });
+
+      /* Khởi tạo sau khi layout hoàn tất */
+      window.addEventListener("load", () => {
+        requestAnimationFrame(() => {
+          setupLineSection({
+            sectionId: "s2",
+            canvasId: "canvas2",
+            getCurve: getCurve2,
+            fillId: "lfill2",
+            labelId: "llabel2",
+            nudgeTextId: "ntext2",
+            hudId: "lhud2",
+            nudgeId: "nudge2",
+          });
+
+          setupLineSection({
+            sectionId: "s4",
+            canvasId: "canvas4",
+            getCurve: getCurve4,
+            fillId: "lfill4",
+            labelId: "llabel4",
+            nudgeTextId: "ntext4",
+            hudId: "lhud4",
+            nudgeId: "nudge4",
+          });
+
+          ScrollTrigger.refresh();
+        });
+      });
+
+      /* CTA */
+      document.querySelector(".cta-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        gsap.to(window, { duration: 1.4, scrollTo: 0, ease: "power3.inOut" });
+      });
+    </script>
+  </body>
+</html>
